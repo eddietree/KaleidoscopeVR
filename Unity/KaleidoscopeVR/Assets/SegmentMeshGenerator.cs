@@ -3,9 +3,12 @@ using System.Collections;
 
 public class SegmentMeshGenerator : MonoBehaviour
 {
+    public int numRotations = 8;
+
 	void Start ()
     {
         InitDebugMesh();
+        GenerateRotations();
 	}
 	
 	void Update ()
@@ -34,4 +37,29 @@ public class SegmentMeshGenerator : MonoBehaviour
 
         mesh.RecalculateNormals();
     }
+
+    void GenerateRotations()
+    {
+        float deltaAngle = Mathf.PI * 2.0f / numRotations;
+
+        for( int i = 0; i < numRotations; i+=1 )
+        {
+            float angle = deltaAngle * i;
+
+            // create layer
+            var layer = new GameObject("Layer_" + i);
+            layer.transform.parent = this.transform;
+
+            // set transform
+            layer.transform.Rotate(transform.forward, angle * Mathf.Rad2Deg);
+
+            var layerMeshFilter = layer.AddComponent<MeshFilter>();
+            layerMeshFilter.sharedMesh = this.GetComponent<MeshFilter>().sharedMesh;
+
+
+            var layerMeshRenderer = layer.AddComponent<MeshRenderer>();
+            layerMeshRenderer.sharedMaterial = GetComponent<MeshRenderer>().sharedMaterial;
+        }
+    }
+
 }
