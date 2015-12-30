@@ -40,9 +40,13 @@
 				v2f o;
 
 				float4 pos = v.vertex;
-				pos.y += v.uv.y;
+				//pos.y += v.uv.y*0.1f;
 
-				o.vertex = mul(UNITY_MATRIX_MVP, pos);
+				float4 posNDC = mul(UNITY_MATRIX_MVP, pos);
+				posNDC.y += v.uv.y*0.5f;// / posNDC.w;
+				//posNDC.w += 1.0f;
+
+				o.vertex = posNDC;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				//UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
