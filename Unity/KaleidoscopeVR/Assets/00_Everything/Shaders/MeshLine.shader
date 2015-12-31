@@ -74,10 +74,10 @@
 
 				//posNDC.w += 1.0f;
 
-				o.color = float4(1.0, 1.0, 1.0, 1.0);
-				o.color.xy = posCurrNDC.xy / posCurrNDC.w;
-				o.color.z = 0.0;
-				o.color.w = 1.0;
+				o.color = float4(0.0,0.0,0.0, 1.0);
+				//o.color.xy = posCurrNDC.xy / posCurrNDC.w;
+				//o.color.z = 0.0;
+				//o.color.w = 1.0;
 
 				o.vertex = posCurrNDC;
 				o.normal = v.normal;

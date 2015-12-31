@@ -66,10 +66,14 @@ public class SegmentMeshGenerator : MonoBehaviour
             var pointPosCurr = points[pointIndexCurr];
             var pointPosNext = points[pointIndexNext];
 
+            // handle last
+            if (i == numPoints-1)
+            {
+                pointPosNext = pointPosCurr - (pointPosCurr - pointPosPrev);
+            }
+
             // offset
             int vertOffsetCurr = pointIndexCurr * 2;
-            //int vertOffsetPrev = pointIndexPrev * 2;
-            //int vertOffsetNext = pointIndexNext * 2;
 
             // set verts
             vertices[vertOffsetCurr + 0] = pointPosCurr;
@@ -80,19 +84,26 @@ public class SegmentMeshGenerator : MonoBehaviour
             verticesNext[vertOffsetCurr + 1] = pointPosNext;
         }
 
+        // handle first previous point
+        var firstPointPrev = points[0] * 2.0f - points[1];
+        verticesPrev[0] = firstPointPrev;
+        verticesPrev[1] = firstPointPrev;
+
         // copy until the end
-        for( int i = numPoints; i < maxNumPoints; i+=1 )
+        for ( int i = numPoints; i < maxNumPoints; i+=1 )
         {
             int vertOffsetCurr = i * 2;
             var pointPos = points[numPoints - 1];
 
-            vertices[vertOffsetCurr + 0] = pointPos;
-            vertices[vertOffsetCurr + 1] = pointPos;
-            verticesPrev[vertOffsetCurr + 0] = pointPos;
-            verticesPrev[vertOffsetCurr + 1] = pointPos;
-            verticesNext[vertOffsetCurr + 0] = pointPos;
-            verticesNext[vertOffsetCurr + 1] = pointPos;
+            vertices[vertOffsetCurr + 0] = points[numPoints - 1];
+            vertices[vertOffsetCurr + 1] = points[numPoints - 1];
+            verticesPrev[vertOffsetCurr + 0] = points[numPoints - 1];
+            verticesPrev[vertOffsetCurr + 1] = points[numPoints - 1];
+            verticesNext[vertOffsetCurr + 0] = points[numPoints - 1];
+            verticesNext[vertOffsetCurr + 1] = points[numPoints - 1];
         }
+
+        // TODO: calculate bounds
 
         var meshFilter = GetComponent<MeshFilter>();
         var mesh = meshFilter.sharedMesh;
