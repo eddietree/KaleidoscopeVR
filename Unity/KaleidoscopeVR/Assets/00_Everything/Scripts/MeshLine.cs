@@ -12,18 +12,17 @@ public class MeshLine : MonoBehaviour
     // raw points of the curve
     Vector3[] points;
 
-    // mesh
+    // mesh data
+    Mesh mesh;
     Vector3[] vertices;
     Vector3[] verticesPrev;
     Vector4[] verticesNext;
     Vector2[] uvs;
     int[] tris;
 
-   
     public void Init()
     {
         points = new Vector3[maxNumPoints];
-
         InitMesh();
     }
 
@@ -37,26 +36,32 @@ public class MeshLine : MonoBehaviour
         numPoints++;
     }
 
+    public void AddPoints(Vector3[] pts)
+    {
+        for( int i = 0; i < pts.Length; ++i )
+        {
+            AddPoint(pts[i]);
+        }
+    }
+
     void Start()
     {
         Init();
     }
 
-    void Update()
-    {
-
-    }
-
-    // call update only if points chaneg
-    public void GenerateVertices()
+    public void UpdateVerticesRange( int pointIndexStart, int pointCount )
     {
         // don't do anything until there are three points
         if (numPoints < 3)
             return;
 
-        Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
+        // indices
+        pointIndexStart = Mathf.Max(0, pointIndexStart);
+        int pointIndexEnd = Mathf.Min( numPoints-1, pointIndexStart + pointCount);
 
-        for (int i = 0; i < numPoints; i += 1)
+        var bounds = mesh.bounds;
+
+        for (int i = pointIndexStart; i <= pointIndexEnd; i += 1)
         {
             // indices
             int pointIndexPrev = Mathf.Max(0, i - 1);
@@ -111,9 +116,6 @@ public class MeshLine : MonoBehaviour
         tris[triOffsetFinal + 4] = 0;
         tris[triOffsetFinal + 5] = 0;
 
-        var meshFilter = GetComponent<MeshFilter>();
-        var mesh = meshFilter.sharedMesh;
-
         // set mesh properties
         mesh.vertices = vertices;
         mesh.normals = verticesPrev;
@@ -122,11 +124,18 @@ public class MeshLine : MonoBehaviour
         mesh.bounds = bounds;
     }
 
+    // call update only if points chaneg
+    public void UpdateVerticesAll()
+    {
+        mesh.bounds = new Bounds(Vector3.zero, Vector3.zero);
+        UpdateVerticesRange(0, numPoints);
+    }
+
     void InitMesh()
     {
         var meshFilter = GetComponent<MeshFilter>();
-        var mesh = new Mesh();
-        meshFilter.mesh = mesh;
+        var newMesh = new Mesh();
+        meshFilter.mesh = newMesh;
 
         int numVerts = maxNumPoints * 2;
 
@@ -158,41 +167,13 @@ public class MeshLine : MonoBehaviour
             uvs[i * 2 + 1] = new Vector2(0.0f, +1.0f);
         }
 
-        mesh.vertices = vertices;
-        mesh.normals = verticesPrev;
-        mesh.tangents = verticesNext;
-        mesh.triangles = tris;
-        mesh.uv = uvs;
+        newMesh.vertices = vertices;
+        newMesh.normals = verticesPrev;
+        newMesh.tangents = verticesNext;
+        newMesh.triangles = tris;
+        newMesh.uv = uvs;
+        newMesh.MarkDynamic();
 
-        mesh.MarkDynamic();
+        mesh = meshFilter.sharedMesh;
     }
-
-    void GenerateRotations()
-    {
-        float deltaAngle = Mathf.PI * 2.0f / numRotations;
-
-        var sharedMesh = this.GetComponent<MeshFilter>().sharedMesh;
-        var sharedMaterial = this.GetComponent<MeshRenderer>().sharedMaterial;
-
-        for (int i = 0; i < numRotations; i += 1)
-        {
-            float angle = deltaAngle * i;
-
-            // create layer
-            var layer = new GameObject("Layer_" + i);
-            layer.transform.parent = this.transform;
-
-            // set transform
-            layer.transform.Rotate(transform.forward, angle * Mathf.Rad2Deg);
-
-            var layerMeshFilter = layer.AddComponent<MeshFilter>();
-            layerMeshFilter.sharedMesh = sharedMesh;
-
-            var layerMeshRenderer = layer.AddComponent<MeshRenderer>();
-            layerMeshRenderer.sharedMaterial = sharedMaterial;
-        }
-
-        GetComponent<MeshRenderer>().enabled = false;
-    }
-
 }

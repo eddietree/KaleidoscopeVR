@@ -37,7 +37,7 @@ public class SegmentMeshGenerator : MonoBehaviour
             meshLine.AddPoint(new Vector3(x, y, z));
         }
 
-        meshLine.GenerateVertices();
+        meshLine.UpdateVerticesAll();
     }
 
     void GenerateRotations()
