@@ -17,6 +17,7 @@ public class SegmentMeshGenerator : MonoBehaviour
     Vector3[] verticesPrev;
     Vector4[] verticesNext;
     Vector2[] uvs;
+    int[] tris;
 
     void Start ()
     {
@@ -66,12 +67,6 @@ public class SegmentMeshGenerator : MonoBehaviour
             var pointPosCurr = points[pointIndexCurr];
             var pointPosNext = points[pointIndexNext];
 
-            // handle last
-            if (i == numPoints-1)
-            {
-                pointPosNext = pointPosCurr - (pointPosCurr - pointPosPrev);
-            }
-
             // offset
             int vertOffsetCurr = pointIndexCurr * 2;
 
@@ -82,6 +77,15 @@ public class SegmentMeshGenerator : MonoBehaviour
             verticesPrev[vertOffsetCurr + 1] = pointPosPrev;
             verticesNext[vertOffsetCurr + 0] = pointPosNext;
             verticesNext[vertOffsetCurr + 1] = pointPosNext;
+
+            // tris
+            int triOffset = pointIndexCurr * 6;
+            tris[triOffset + 0] = vertOffsetCurr + 0;
+            tris[triOffset + 1] = vertOffsetCurr + 3;
+            tris[triOffset + 2] = vertOffsetCurr + 2;
+            tris[triOffset + 3] = vertOffsetCurr + 0;
+            tris[triOffset + 4] = vertOffsetCurr + 1;
+            tris[triOffset + 5] = vertOffsetCurr + 3;
         }
 
         // handle first previous point
@@ -89,19 +93,19 @@ public class SegmentMeshGenerator : MonoBehaviour
         verticesPrev[0] = firstPointPrev;
         verticesPrev[1] = firstPointPrev;
 
-        // copy until the end
-        for ( int i = numPoints; i < maxNumPoints; i+=1 )
-        {
-            int vertOffsetCurr = i * 2;
-            var pointPos = points[numPoints - 1];
+        // handle last
+        var lastPointNext = points[numPoints - 1] * 2 - points[numPoints - 2];
+        verticesNext[(numPoints - 1) * 2 + 0] = lastPointNext;
+        verticesNext[(numPoints - 1) * 2 + 1] = lastPointNext;
 
-            vertices[vertOffsetCurr + 0] = points[numPoints - 1];
-            vertices[vertOffsetCurr + 1] = points[numPoints - 1];
-            verticesPrev[vertOffsetCurr + 0] = points[numPoints - 1];
-            verticesPrev[vertOffsetCurr + 1] = points[numPoints - 1];
-            verticesNext[vertOffsetCurr + 0] = points[numPoints - 1];
-            verticesNext[vertOffsetCurr + 1] = points[numPoints - 1];
-        }
+        // last triangle set
+        int triOffsetFinal = (numPoints-1) * 6;
+        tris[triOffsetFinal + 0] = 0;
+        tris[triOffsetFinal + 1] = 0;
+        tris[triOffsetFinal + 2] = 0;
+        tris[triOffsetFinal + 3] = 0;
+        tris[triOffsetFinal + 4] = 0;
+        tris[triOffsetFinal + 5] = 0;
 
         // TODO: calculate bounds
 
@@ -112,6 +116,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         mesh.vertices = vertices;
         mesh.normals = verticesPrev;
         mesh.tangents = verticesNext;
+        mesh.triangles = tris;
     }
 
     void InitMesh()
@@ -138,8 +143,12 @@ public class SegmentMeshGenerator : MonoBehaviour
         mesh.tangents = verticesNext;
 
         // faces
-        var tris = new int[ (maxNumPoints - 1)* 6 ];
-        for ( int i = 0; i < maxNumPoints - 1; i+=1 )
+        tris = new int[ (maxNumPoints - 1)* 6 ];
+        for( int i = 0; i < tris.Length; ++i )
+        {
+            tris[i] = 0;
+        }
+        /*for ( int i = 0; i < maxNumPoints - 1; i+=1 )
         {
             int triOffset = i * 6;
             int vertOffset = i * 2;
@@ -150,8 +159,7 @@ public class SegmentMeshGenerator : MonoBehaviour
             tris[triOffset + 3] = vertOffset + 0;
             tris[triOffset + 4] = vertOffset + 1;
             tris[triOffset + 5] = vertOffset + 3;
-
-        }
+        }*/
         mesh.triangles = tris;
 
         // uvs
