@@ -88,11 +88,11 @@ public class SegmentMeshGenerator : MonoBehaviour
             // tris
             int triOffset = pointIndexCurr * 6;
             tris[triOffset + 0] = vertOffsetCurr + 0;
-            tris[triOffset + 1] = vertOffsetCurr + 3;
-            tris[triOffset + 2] = vertOffsetCurr + 2;
+            tris[triOffset + 1] = vertOffsetCurr + 2;
+            tris[triOffset + 2] = vertOffsetCurr + 3;
             tris[triOffset + 3] = vertOffsetCurr + 0;
-            tris[triOffset + 4] = vertOffsetCurr + 1;
-            tris[triOffset + 5] = vertOffsetCurr + 3;
+            tris[triOffset + 4] = vertOffsetCurr + 3;
+            tris[triOffset + 5] = vertOffsetCurr + 1;
 
             // add point to bounds
             bounds.Encapsulate(pointPosCurr);

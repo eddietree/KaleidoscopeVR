@@ -17,7 +17,7 @@
 			#pragma vertex vert
 			#pragma fragment frag
 			// make fog work
-			//#pragma multi_compile_fog
+			#pragma multi_compile_fog
 			
 			#include "UnityCG.cginc"
 
@@ -31,9 +31,10 @@
 
 			struct v2f
 			{
+				UNITY_FOG_COORDS(1)
+
 				float2 uv : TEXCOORD0;
 				float3 normal : NORMAL;
-				//UNITY_FOG_COORDS(1)
 				float4 vertex : SV_POSITION;
 				float4 color: TEXCOORD6;
 
@@ -62,27 +63,21 @@
 				float2 posNextXY = posNextNDC.xy / posNextNDC.w;
 				float2 posPrevXY = posPrevNDC.xy / posPrevNDC.w;
 
+				// calculate screen-space move angle
 				float2 vec0 = normalize(posCurrXY - posPrevXY);
 				float2 vec1 = normalize(posNextXY - posCurrXY);
 				float2 vecForwardAvg = normalize(vec0 + vec1);
 				float2 vecUp = float2(-vecForwardAvg.y * aspect, vecForwardAvg.x);
 
-				//posCurrNDC.y += v.uv.y * posCurrNDC.w * 0.1;
-				//posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.1;
+				// move position thickness
 				posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.05;
 
-
-				//posNDC.w += 1.0f;
-
 				o.color = float4(0.0,0.0,0.0, 1.0);
-				//o.color.xy = posCurrNDC.xy / posCurrNDC.w;
-				//o.color.z = 0.0;
-				//o.color.w = 1.0;
-
 				o.vertex = posCurrNDC;
 				o.normal = v.normal;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				//UNITY_TRANSFER_FOG(o,o.vertex);
+
+				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
 			
@@ -91,8 +86,10 @@
 				// sample the texture
 				//fixed4 col = tex2D(_MainTex, i.uv);
 				fixed4 col = i.color;
+
 				// apply fog
-				//UNITY_APPLY_FOG(i.fogCoord, col);
+				UNITY_APPLY_FOG(i.fogCoord, col);
+
 				return col;
 			}
 			ENDCG
