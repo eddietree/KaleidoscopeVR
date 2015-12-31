@@ -63,7 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\00_Everything\Scripts\EditorQuickFind.cs" />
-    <Compile Include="Assets\SegmentMeshGenerator.cs" />
+    <Compile Include="Assets\00_Everything\Scripts\MeshLine.cs" />
+    <Compile Include="Assets\00_Everything\Scripts\SegmentMeshGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\00_Everything\Shaders\MeshLine.shader" />

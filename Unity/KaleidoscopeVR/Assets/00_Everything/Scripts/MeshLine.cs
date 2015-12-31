@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-public class SegmentMeshGenerator : MonoBehaviour
+public class MeshLine : MonoBehaviour
 {
     public int numRotations = 8;
 
@@ -19,42 +19,36 @@ public class SegmentMeshGenerator : MonoBehaviour
     Vector2[] uvs;
     int[] tris;
 
-    void Start ()
+   
+    public void Init()
     {
         points = new Vector3[maxNumPoints];
 
         InitMesh();
-        GenerateRotations();
-
-        // DEBUG
-        InitDebugPoints();
-        UpdateVertices();
     }
-	
-	void Update ()
+
+    public void AddPoint(Vector3 pt)
     {
-	
-	}
+        // cannot add anymore
+        if (numPoints >= maxNumPoints)
+            return;
 
-    void InitDebugPoints()
+        points[numPoints] = pt;
+        numPoints++;
+    }
+
+    void Start()
     {
-        int numDebugPoints = 20;
+        Init();
+    }
 
-        for( int i = 0; i < numDebugPoints; i+=1 )
-        {
-            float angle = i * 0.3f;
-            float x = 1.0f + angle;//
-            float y = Mathf.Cos(angle);
-            float z = 0.0f;
+    void Update()
+    {
 
-            points[i] = new Vector3(x, y, z);
-        }
-
-        numPoints += numDebugPoints;
     }
 
     // call update only if points chaneg
-    void UpdateVertices()
+    public void GenerateVertices()
     {
         // don't do anything until there are three points
         if (numPoints < 3)
@@ -109,7 +103,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         verticesNext[(numPoints - 1) * 2 + 1] = lastPointNext;
 
         // last triangle set should be zerod out
-        int triOffsetFinal = (numPoints-1) * 6;
+        int triOffsetFinal = (numPoints - 1) * 6;
         tris[triOffsetFinal + 0] = 0;
         tris[triOffsetFinal + 1] = 0;
         tris[triOffsetFinal + 2] = 0;
@@ -144,7 +138,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         uvs = new Vector2[numVerts];
 
         // verts
-        for (int i = 0; i < numVerts; i+=1 )
+        for (int i = 0; i < numVerts; i += 1)
         {
             vertices[i] = Vector3.zero;
             verticesPrev[i] = Vector3.zero;
@@ -152,7 +146,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         }
 
         // faces
-        for( int i = 0; i < tris.Length; ++i )
+        for (int i = 0; i < tris.Length; ++i)
         {
             tris[i] = 0;
         }
@@ -180,7 +174,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         var sharedMesh = this.GetComponent<MeshFilter>().sharedMesh;
         var sharedMaterial = this.GetComponent<MeshRenderer>().sharedMaterial;
 
-        for ( int i = 0; i < numRotations; i+=1 )
+        for (int i = 0; i < numRotations; i += 1)
         {
             float angle = deltaAngle * i;
 
