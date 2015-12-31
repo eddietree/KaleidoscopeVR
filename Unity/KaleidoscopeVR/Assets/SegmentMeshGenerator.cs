@@ -180,7 +180,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         var sharedMesh = this.GetComponent<MeshFilter>().sharedMesh;
         var sharedMaterial = this.GetComponent<MeshRenderer>().sharedMaterial;
 
-        for ( int i = 1; i < numRotations; i+=1 )
+        for ( int i = 0; i < numRotations; i+=1 )
         {
             float angle = deltaAngle * i;
 
@@ -197,6 +197,8 @@ public class SegmentMeshGenerator : MonoBehaviour
             var layerMeshRenderer = layer.AddComponent<MeshRenderer>();
             layerMeshRenderer.sharedMaterial = sharedMaterial;
         }
+
+        GetComponent<MeshRenderer>().enabled = false;
     }
 
 }
