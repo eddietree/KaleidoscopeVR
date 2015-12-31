@@ -11,7 +11,7 @@
 
 		Pass
 		{
-			Cull Front
+			Cull Off
 
 			CGPROGRAM
 			#pragma vertex vert

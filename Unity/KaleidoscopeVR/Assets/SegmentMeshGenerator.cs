@@ -56,8 +56,15 @@ public class SegmentMeshGenerator : MonoBehaviour
     // call update only if points chaneg
     void UpdateVertices()
     {
+        // don't do anything until there are three points
+        if (numPoints < 3)
+            return;
+
+        Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
+
         for (int i = 0; i < numPoints; i += 1)
         {
+            // indices
             int pointIndexPrev = Mathf.Max(0, i - 1);
             int pointIndexCurr = i;
             int pointIndexNext = Mathf.Min(numPoints - 1, i + 1);
@@ -86,19 +93,22 @@ public class SegmentMeshGenerator : MonoBehaviour
             tris[triOffset + 3] = vertOffsetCurr + 0;
             tris[triOffset + 4] = vertOffsetCurr + 1;
             tris[triOffset + 5] = vertOffsetCurr + 3;
+
+            // add point to bounds
+            bounds.Encapsulate(pointPosCurr);
         }
 
-        // handle first previous point
+        // handle first previous point (because has no previous)
         var firstPointPrev = points[0] * 2.0f - points[1];
         verticesPrev[0] = firstPointPrev;
         verticesPrev[1] = firstPointPrev;
 
-        // handle last
+        // handle last point's next vert (because has no next)
         var lastPointNext = points[numPoints - 1] * 2 - points[numPoints - 2];
         verticesNext[(numPoints - 1) * 2 + 0] = lastPointNext;
         verticesNext[(numPoints - 1) * 2 + 1] = lastPointNext;
 
-        // last triangle set
+        // last triangle set should be zerod out
         int triOffsetFinal = (numPoints-1) * 6;
         tris[triOffsetFinal + 0] = 0;
         tris[triOffsetFinal + 1] = 0;
@@ -107,16 +117,15 @@ public class SegmentMeshGenerator : MonoBehaviour
         tris[triOffsetFinal + 4] = 0;
         tris[triOffsetFinal + 5] = 0;
 
-        // TODO: calculate bounds
-
         var meshFilter = GetComponent<MeshFilter>();
         var mesh = meshFilter.sharedMesh;
 
-        // set new vertices
+        // set mesh properties
         mesh.vertices = vertices;
         mesh.normals = verticesPrev;
         mesh.tangents = verticesNext;
         mesh.triangles = tris;
+        mesh.bounds = bounds;
     }
 
     void InitMesh()
@@ -131,6 +140,10 @@ public class SegmentMeshGenerator : MonoBehaviour
         vertices = new Vector3[numVerts];
         verticesPrev = new Vector3[numVerts];
         verticesNext = new Vector4[numVerts];
+        tris = new int[(maxNumPoints - 1) * 6];
+        uvs = new Vector2[numVerts];
+
+        // verts
         for (int i = 0; i < numVerts; i+=1 )
         {
             vertices[i] = Vector3.zero;
@@ -138,39 +151,24 @@ public class SegmentMeshGenerator : MonoBehaviour
             verticesNext[i] = Vector4.zero;
         }
 
-        mesh.vertices = vertices;
-        mesh.normals = verticesPrev;
-        mesh.tangents = verticesNext;
-
         // faces
-        tris = new int[ (maxNumPoints - 1)* 6 ];
         for( int i = 0; i < tris.Length; ++i )
         {
             tris[i] = 0;
         }
-        /*for ( int i = 0; i < maxNumPoints - 1; i+=1 )
-        {
-            int triOffset = i * 6;
-            int vertOffset = i * 2;
-
-            tris[triOffset + 0] = vertOffset + 0;
-            tris[triOffset + 1] = vertOffset + 3;
-            tris[triOffset + 2] = vertOffset + 2;
-            tris[triOffset + 3] = vertOffset + 0;
-            tris[triOffset + 4] = vertOffset + 1;
-            tris[triOffset + 5] = vertOffset + 3;
-        }*/
-        mesh.triangles = tris;
 
         // uvs
-        uvs = new Vector2[numVerts];
         for (int i = 0; i < maxNumPoints; i += 1)
         {
             uvs[i * 2 + 0] = new Vector2(0.0f, -1.0f);
             uvs[i * 2 + 1] = new Vector2(0.0f, +1.0f);
         }
+
+        mesh.vertices = vertices;
+        mesh.normals = verticesPrev;
+        mesh.tangents = verticesNext;
+        mesh.triangles = tris;
         mesh.uv = uvs;
-        //mesh.RecalculateNormals();
 
         mesh.MarkDynamic();
     }
