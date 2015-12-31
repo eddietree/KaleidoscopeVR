@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class SegmentMeshGenerator : MonoBehaviour
 {
@@ -36,12 +37,12 @@ public class SegmentMeshGenerator : MonoBehaviour
 
     void InitDebugPoints()
     {
-        int numDebugPoints = 100;
+        int numDebugPoints = 20;
 
         for( int i = 0; i < numDebugPoints; i+=1 )
         {
-            float angle = i * 0.1f;
-            float x = angle;//
+            float angle = i * 0.3f;
+            float x = 1.0f + angle;//
             float y = Mathf.Cos(angle);
             float z = 0.0f;
 
@@ -56,11 +57,41 @@ public class SegmentMeshGenerator : MonoBehaviour
     {
         for (int i = 0; i < numPoints; i += 1)
         {
-            var pointPos = points[i];
+            int pointIndexPrev = Mathf.Max(0, i - 1);
+            int pointIndexCurr = i;
+            int pointIndexNext = Mathf.Min(numPoints - 1, i + 1);
 
-            int vertOffset = i * 2;
-            vertices[vertOffset + 0] = pointPos;
-            vertices[vertOffset + 1] = pointPos;
+            // pos
+            var pointPosPrev = points[pointIndexPrev];
+            var pointPosCurr = points[pointIndexCurr];
+            var pointPosNext = points[pointIndexNext];
+
+            // offset
+            int vertOffsetCurr = pointIndexCurr * 2;
+            //int vertOffsetPrev = pointIndexPrev * 2;
+            //int vertOffsetNext = pointIndexNext * 2;
+
+            // set verts
+            vertices[vertOffsetCurr + 0] = pointPosCurr;
+            vertices[vertOffsetCurr + 1] = pointPosCurr;
+            verticesPrev[vertOffsetCurr + 0] = pointPosPrev;
+            verticesPrev[vertOffsetCurr + 1] = pointPosPrev;
+            verticesNext[vertOffsetCurr + 0] = pointPosNext;
+            verticesNext[vertOffsetCurr + 1] = pointPosNext;
+        }
+
+        // copy until the end
+        for( int i = numPoints; i < maxNumPoints; i+=1 )
+        {
+            int vertOffsetCurr = i * 2;
+            var pointPos = points[numPoints - 1];
+
+            vertices[vertOffsetCurr + 0] = pointPos;
+            vertices[vertOffsetCurr + 1] = pointPos;
+            verticesPrev[vertOffsetCurr + 0] = pointPos;
+            verticesPrev[vertOffsetCurr + 1] = pointPos;
+            verticesNext[vertOffsetCurr + 0] = pointPos;
+            verticesNext[vertOffsetCurr + 1] = pointPos;
         }
 
         var meshFilter = GetComponent<MeshFilter>();

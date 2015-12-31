@@ -11,6 +11,8 @@
 
 		Pass
 		{
+			Cull Front
+
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -23,6 +25,7 @@
 			{
 				float4 vertex : POSITION;
 				float3 normal : NORMAL;
+				float4 tangent : TANGENT;
 				float2 uv : TEXCOORD0;
 			};
 
@@ -43,19 +46,40 @@
 			{
 				v2f o;
 
-				float4 pos = v.vertex;
-				//pos.y += v.uv.y*0.1f;
+				float aspect = _ScreenParams.y / _ScreenParams.x;
 
-				float4 posNDC = mul(UNITY_MATRIX_MVP, pos);
-				posNDC.y += v.uv.y * posNDC.w * 0.1;
+				float3 posCurr = v.vertex.xyz;
+				float3 posNext = v.tangent.xyz;
+				float3 posPrev = v.normal.xyz;
+
+				// NDC
+				float4 posCurrNDC = mul(UNITY_MATRIX_MVP, float4(posCurr.x, posCurr.y, posCurr.z, 1.0f));
+				float4 posNextNDC = mul(UNITY_MATRIX_MVP, float4(posNext.x, posNext.y, posNext.z, 1.0f));
+				float4 posPrevNDC = mul(UNITY_MATRIX_MVP, float4(posPrev.x, posPrev.y, posPrev.z, 1.0f));
+
+				// projected
+				float2 posCurrXY = posCurrNDC.xy / posCurrNDC.w;
+				float2 posNextXY = posNextNDC.xy / posNextNDC.w;
+				float2 posPrevXY = posPrevNDC.xy / posPrevNDC.w;
+
+				float2 vec0 = normalize(posCurrXY - posPrevXY);
+				float2 vec1 = normalize(posNextXY - posCurrXY);
+				float2 vecForwardAvg = normalize(vec0 + vec1);
+				float2 vecUp = float2(-vecForwardAvg.y * aspect, vecForwardAvg.x);
+
+				//posCurrNDC.y += v.uv.y * posCurrNDC.w * 0.1;
+				//posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.1;
+				posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.05;
+
+
 				//posNDC.w += 1.0f;
 
 				o.color = float4(1.0, 1.0, 1.0, 1.0);
-				o.color.xy = posNDC.xy / posNDC.w;
+				o.color.xy = posCurrNDC.xy / posCurrNDC.w;
 				o.color.z = 0.0;
 				o.color.w = 1.0;
 
-				o.vertex = posNDC;
+				o.vertex = posCurrNDC;
 				o.normal = v.normal;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				//UNITY_TRANSFER_FOG(o,o.vertex);
