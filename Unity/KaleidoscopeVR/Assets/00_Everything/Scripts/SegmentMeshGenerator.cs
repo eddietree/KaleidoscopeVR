@@ -14,7 +14,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         meshLine = gameObject.AddComponent<MeshLine>();
         meshLine.Init();
 
-        InitDebugPoints();
+        //InitDebugPoints();
         GenerateRotations();
     }
 	
@@ -28,22 +28,18 @@ public class SegmentMeshGenerator : MonoBehaviour
         Plane plane = new Plane(new Vector3(0.0f, 0.0f, -1.0f), 0.0f);
 
         var camera = Camera.main;
-        var camPos = camera.transform.position;
-        var camDir = camera.transform.forward;
+        var mousePos = Input.mousePosition;
+        var ray = camera.ScreenPointToRay(mousePos);
 
-        var ray = new Ray(camPos, camDir);
         float enter = 0.0f;
+
         if ( plane.Raycast( ray, out enter ) )
         {
-            var interesctionPt = camPos + camDir * enter;
+            var interesctionPt = ray.origin + ray.direction * enter;
 
             meshLine.AddPoint(interesctionPt);
-
-            //meshLine.AddPoint(new Vector3( meshLine.numPoints, Mathf.Sin(meshLine.numPoints), 0.0f ));
             meshLine.UpdateVerticesRange(meshLine.numPoints-2, 1);
-            //meshLine.UpdateVerticesAll();
         }
-        //plane.Raycast()
     }
 
     void InitDebugPoints()
@@ -88,7 +84,7 @@ public class SegmentMeshGenerator : MonoBehaviour
             layerMeshRenderer.sharedMaterial = sharedMaterial;
         }
 
-        //GetComponent<MeshRenderer>().enabled = false;
+        GetComponent<MeshRenderer>().enabled = false;
     }
 
 }

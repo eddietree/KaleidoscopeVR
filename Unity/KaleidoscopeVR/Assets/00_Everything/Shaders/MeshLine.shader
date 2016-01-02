@@ -70,7 +70,7 @@
 				float2 vecUp = float2(-vecForwardAvg.y * aspect, vecForwardAvg.x);
 
 				// move position thickness
-				posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.05;
+				posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02;
 
 				o.color = float4(0.0,0.0,0.0, 1.0);
 				o.vertex = posCurrNDC;
