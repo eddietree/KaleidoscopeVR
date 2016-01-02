@@ -13,7 +13,7 @@ public class MeshLine : MonoBehaviour
     Vector3[] points;
 
     // mesh data
-    Mesh mesh;
+    public Mesh mesh = null;
     Vector3[] vertices;
     Vector3[] verticesPrev;
     Vector4[] verticesNext;
@@ -22,8 +22,11 @@ public class MeshLine : MonoBehaviour
 
     public void Init()
     {
-        points = new Vector3[maxNumPoints];
-        InitMesh();
+        if (points == null )
+            points = new Vector3[maxNumPoints];
+
+        if (mesh == null)
+            InitMesh();
     }
 
     public void AddPoint(Vector3 pt)
