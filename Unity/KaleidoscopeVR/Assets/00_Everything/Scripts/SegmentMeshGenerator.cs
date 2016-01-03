@@ -33,7 +33,9 @@ public class SegmentMeshGenerator : MonoBehaviour
 
         var camera = Camera.main;
         var mousePos = Input.mousePosition;
-        var ray = camera.ScreenPointToRay(mousePos);
+
+        //var ray = camera.ScreenPointToRay(mousePos);
+        var ray = new Ray( camera.transform.position, camera.transform.forward );
 
         float enter = 0.0f;
 
@@ -67,15 +69,16 @@ public class SegmentMeshGenerator : MonoBehaviour
         var speed = drawVelAccum.magnitude;
         //Debug.Log(speed);
         var velMin = 0.0f;
-        var velMax = 10.0f;
+        var velMax = 20.0f;
         var lineThicknessMin = 0.1f;
         var lineThicknessMax = 4.0f;
-        
 
         var smoothstep = Mathf.Clamp01( (drawVelAccum.magnitude - velMin) / (velMax-velMin) );
-        Debug.Log(smoothstep);
 
         meshLine.lineThickness = Mathf.Lerp( lineThicknessMin, lineThicknessMax, 1.0f-smoothstep);
+
+        var vecTocam = (Camera.main.transform.position - pt).normalized;
+        pt += vecTocam * Time.time * 0.1f;
 
         // add point
         meshLine.AddPoint(pt);
