@@ -8,6 +8,10 @@ public class SegmentMeshGenerator : MonoBehaviour
 
     MeshLine meshLine;
 
+    // draw lines
+    Vector3 drawPosPrev = Vector3.zero;
+    Vector3 drawVelAccum = Vector3.zero;
+
     void Start ()
     {
         // mesh line
@@ -36,10 +40,48 @@ public class SegmentMeshGenerator : MonoBehaviour
         if ( plane.Raycast( ray, out enter ) )
         {
             var interesctionPt = ray.origin + ray.direction * enter;
-
-            meshLine.AddPoint(interesctionPt);
-            meshLine.UpdateVerticesRange(meshLine.numPoints-2, 1);
+            TryAddPoint(interesctionPt);
         }
+    }
+
+    void TryAddPoint( Vector3 pt )
+    {
+        // calc velocity
+        Vector3 drawPosVel = (pt - drawPosPrev) / Time.deltaTime;
+        drawVelAccum = Vector3.Lerp(drawVelAccum, drawPosVel, 0.1f);
+        drawPosPrev = pt;
+
+        if (meshLine.numPoints > 2)
+        {
+            var points = meshLine.points;
+            var lastPt = points[meshLine.numPoints - 1];
+
+            if (Vector3.Distance(lastPt, pt) < 0.01f)
+            {
+                return;
+            }
+
+            points[meshLine.numPoints - 1] = (points[meshLine.numPoints - 2] + pt) * 0.5f;
+        }
+
+        var speed = drawVelAccum.magnitude;
+        //Debug.Log(speed);
+        var velMin = 0.0f;
+        var velMax = 10.0f;
+        var lineThicknessMin = 0.1f;
+        var lineThicknessMax = 4.0f;
+        
+
+        var smoothstep = Mathf.Clamp01( (drawVelAccum.magnitude - velMin) / (velMax-velMin) );
+        Debug.Log(smoothstep);
+
+        meshLine.lineThickness = Mathf.Lerp( lineThicknessMin, lineThicknessMax, 1.0f-smoothstep);
+
+        // add point
+        meshLine.AddPoint(pt);
+
+        //  need to update last two because edges
+        meshLine.UpdateVerticesRange(meshLine.numPoints - 2, 2);
     }
 
     void InitDebugPoints()

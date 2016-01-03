@@ -10,7 +10,10 @@ public class MeshLine : MonoBehaviour
     private int maxNumPoints = 65536 / 4;
 
     // raw points of the curve
-    Vector3[] points;
+    public Vector3[] points;
+
+    // drawing stuff
+    public float lineThickness = 1.0f;
 
     // mesh data
     public Mesh mesh = null;
@@ -75,6 +78,7 @@ public class MeshLine : MonoBehaviour
             var pointPosPrev = points[pointIndexPrev];
             var pointPosCurr = points[pointIndexCurr];
             var pointPosNext = points[pointIndexNext];
+            Vector4 pointPosNextV4 = new Vector4(pointPosNext.x, pointPosNext.y, pointPosNext.z, lineThickness);
 
             // offset
             int vertOffsetCurr = pointIndexCurr * 2;
@@ -84,8 +88,8 @@ public class MeshLine : MonoBehaviour
             vertices[vertOffsetCurr + 1] = pointPosCurr;
             verticesPrev[vertOffsetCurr + 0] = pointPosPrev;
             verticesPrev[vertOffsetCurr + 1] = pointPosPrev;
-            verticesNext[vertOffsetCurr + 0] = pointPosNext;
-            verticesNext[vertOffsetCurr + 1] = pointPosNext;
+            verticesNext[vertOffsetCurr + 0] = pointPosNextV4;
+            verticesNext[vertOffsetCurr + 1] = pointPosNextV4;
 
             // tris
             int triOffset = pointIndexCurr * 6;
@@ -166,8 +170,8 @@ public class MeshLine : MonoBehaviour
         // uvs
         for (int i = 0; i < maxNumPoints; i += 1)
         {
-            uvs[i * 2 + 0] = new Vector2(0.0f, -1.0f);
-            uvs[i * 2 + 1] = new Vector2(0.0f, +1.0f);
+            uvs[i * 2 + 0] = new Vector2(i, -1.0f);
+            uvs[i * 2 + 1] = new Vector2(i, +1.0f);
         }
 
         newMesh.vertices = vertices;

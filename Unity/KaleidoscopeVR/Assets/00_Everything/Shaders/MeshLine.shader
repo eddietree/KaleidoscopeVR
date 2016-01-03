@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		//_Color("Color", Color) = float4(1.0,1.0,1.0,1.0)
 	}
 	SubShader
 	{
@@ -52,6 +53,7 @@
 				float3 posCurr = v.vertex.xyz;
 				float3 posNext = v.tangent.xyz;
 				float3 posPrev = v.normal.xyz;
+				float thickness = v.tangent.w;
 
 				// NDC
 				float4 posCurrNDC = mul(UNITY_MATRIX_MVP, float4(posCurr.x, posCurr.y, posCurr.z, 1.0f));
@@ -70,9 +72,9 @@
 				float2 vecUp = float2(-vecForwardAvg.y * aspect, vecForwardAvg.x);
 
 				// move position thickness
-				posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02;
+				posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02 * thickness;
 
-				o.color = float4(0.0,0.0,0.0, 1.0);
+				o.color = float4(sin(v.uv.x*0.1)*0.5+0.5,0.0,0.0, 1.0);
 				o.vertex = posCurrNDC;
 				o.normal = v.normal;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
