@@ -24,7 +24,11 @@ public class SegmentMeshGenerator : MonoBehaviour
 	
 	void Update ()
     {
-        HandleDrawLine();
+        if ( Input.GetKey(KeyCode.Space) )
+            HandleDrawLine();
+
+        if (Input.GetKey(KeyCode.C))
+            meshLine.Clear();
 	}
 
     void HandleDrawLine()

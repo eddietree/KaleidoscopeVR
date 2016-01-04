@@ -341,6 +341,7 @@ namespace FunktronicLabs
 
             var is_scene = ext == ".unity";
             var is_script = ext == ".cs";
+            var is_shader = ext == ".shader";
 
             Selection.activeObject = asset;
 
@@ -365,7 +366,7 @@ namespace FunktronicLabs
             {
                 UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
             }
-            else if (is_script)
+            else if (is_script || is_shader)
             {
                 AssetDatabase.OpenAsset(asset);
             }

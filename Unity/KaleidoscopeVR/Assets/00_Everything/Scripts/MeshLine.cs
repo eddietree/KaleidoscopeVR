@@ -32,6 +32,12 @@ public class MeshLine : MonoBehaviour
             InitMesh();
     }
 
+    public void Clear()
+    {
+        points = new Vector3[maxNumPoints];
+        InitMesh();
+    }
+
     public void AddPoint(Vector3 pt)
     {
         // cannot add anymore
@@ -141,8 +147,16 @@ public class MeshLine : MonoBehaviour
     void InitMesh()
     {
         var meshFilter = GetComponent<MeshFilter>();
-        var newMesh = new Mesh();
-        meshFilter.mesh = newMesh;
+        Mesh newMesh = null;
+
+        if (meshFilter.sharedMesh)
+        {
+            newMesh = meshFilter.sharedMesh;
+        }
+        else {
+            newMesh = new Mesh();
+            meshFilter.sharedMesh = newMesh;
+        }
 
         int numVerts = maxNumPoints * 2;
 
