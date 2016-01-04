@@ -69,9 +69,9 @@ public class SegmentMeshGenerator : MonoBehaviour
         var speed = drawVelAccum.magnitude;
         //Debug.Log(speed);
         var velMin = 0.0f;
-        var velMax = 20.0f;
+        var velMax = 10.0f;
         var lineThicknessMin = 0.1f;
-        var lineThicknessMax = 4.0f;
+        var lineThicknessMax = 5.0f;
 
         var smoothstep = Mathf.Clamp01( (drawVelAccum.magnitude - velMin) / (velMax-velMin) );
 
