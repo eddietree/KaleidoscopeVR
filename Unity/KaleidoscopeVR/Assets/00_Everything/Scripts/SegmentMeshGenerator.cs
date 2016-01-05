@@ -5,6 +5,8 @@ using System;
 public class SegmentMeshGenerator : MonoBehaviour
 {
     public int numRotations = 8;
+    private int numPointsAdded = 0;
+    private int pointAddedIndex = 0;
 
     MeshLine meshLine;
 
@@ -81,14 +83,26 @@ public class SegmentMeshGenerator : MonoBehaviour
 
         meshLine.lineThickness = Mathf.Lerp( lineThicknessMin, lineThicknessMax, 1.0f-smoothstep);
 
-        var vecTocam = (Camera.main.transform.position - pt).normalized;
-        pt += vecTocam * Time.time * 0.1f;
+        //var vecTocam = (Camera.main.transform.position - pt).normalized;
+        //pt += vecTocam * Time.time * 0.1f;
 
-        // add point
-        meshLine.AddPoint(pt);
+        // already maxed out
+        if (numPointsAdded >= MeshLine.maxNumPoints)
+        {
+            int pointIndex = numPointsAdded % MeshLine.maxNumPoints;
+            meshLine.SetPoint(pt, pointIndex);
+            meshLine.UpdateVerticesRange(pointIndex - 1, 2);
+        }
+        else
+        {
+            // add point
+            meshLine.AddPoint(pt);
 
-        //  need to update last two because edges
-        meshLine.UpdateVerticesRange(meshLine.numPoints - 2, 2);
+            //  need to update last two because edges
+            meshLine.UpdateVerticesRange(meshLine.numPoints - 2, 2);
+        }
+
+        ++numPointsAdded;
     }
 
     void InitDebugPoints()
