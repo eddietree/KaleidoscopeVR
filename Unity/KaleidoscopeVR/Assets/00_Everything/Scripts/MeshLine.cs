@@ -84,9 +84,9 @@ public class MeshLine : MonoBehaviour
         for (int i = pointIndexStart; i <= pointIndexEnd; i += 1)
         {
             // indices
-            int pointIndexPrev = Mathf.Max(0, i - 1);
+            int pointIndexPrev = (i - 1 + numPoints) % numPoints;
             int pointIndexCurr = i;
-            int pointIndexNext = Mathf.Min(numPoints - 1, i + 1);
+            int pointIndexNext = (i + 1) % numPoints;
 
             // pos
             var pointPosPrev = points[pointIndexPrev];
@@ -142,12 +142,29 @@ public class MeshLine : MonoBehaviour
             tris[triOffsetFinal + 5] = 0;
         }
 
+        mesh.bounds = bounds;
+        SendToGpu();
+    }
+
+    public void BreakLineAt( int ptIndex )
+    {
+        int triOffset = ptIndex * 6;
+
+        tris[(triOffset + 0) % tris.Length] = 0;
+        tris[(triOffset + 1) % tris.Length] = 0;
+        tris[(triOffset + 2) % tris.Length] = 0;
+        tris[(triOffset + 3) % tris.Length] = 0;
+        tris[(triOffset + 4) % tris.Length] = 0;
+        tris[(triOffset + 5) % tris.Length] = 0;
+    }
+
+    public void SendToGpu()
+    {
         // set mesh properties
         mesh.vertices = vertices;
         mesh.normals = verticesPrev;
         mesh.tangents = verticesNext;
         mesh.triangles = tris;
-        mesh.bounds = bounds;
     }
 
     // call update only if points chaneg
