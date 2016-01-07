@@ -14,6 +14,8 @@ public class SegmentMeshGenerator : MonoBehaviour
     Vector3 drawPosPrev = Vector3.zero;
     Vector3 drawVelAccum = Vector3.zero;
 
+    public bool autoDraw = false;
+
     void Start ()
     {
         // mesh line
@@ -22,17 +24,35 @@ public class SegmentMeshGenerator : MonoBehaviour
 
         //InitDebugPoints();
         GenerateRotations();
+
+        if (autoDraw)
+        {
+            StartCoroutine(DrawInfiniteLoop());
+        }
     }
 	
 	void Update ()
     {
         //if ( Input.GetKey(KeyCode.Space) )
-        if ( Input.GetMouseButton(0) )
+        if ( !autoDraw && Input.GetMouseButton(0) )
             HandleDrawLine();
 
         if (Input.GetKey(KeyCode.C))
             meshLine.Clear();
 	}
+
+    IEnumerator DrawInfiniteLoop()
+    {
+        while(true)
+        {
+            float time = Time.time * 2.0f;
+            float radius = 0.3f;
+            Vector3 point = new Vector3(Mathf.Cos(time*1.0f) * radius, Mathf.Sin(time*2.0f) * radius, -1.0f);
+            TryAddPoint(point);
+
+            yield return null;
+        }
+    }
 
     void HandleDrawLine()
     {

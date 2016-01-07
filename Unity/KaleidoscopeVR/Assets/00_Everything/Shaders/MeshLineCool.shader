@@ -5,6 +5,7 @@
 		_MainTex("Texture", 2D) = "white" {}
 		_Color0("Color 0", Color) = (1.0,1.0,1.0,1.0)
 		_Color1("Color 1", Color) = (1.0,1.0,1.0,1.0)
+		_Thickness("Thickness", Float) = 0.02
 	}
 		SubShader
 	{
@@ -46,6 +47,7 @@
 	float4 _MainTex_ST;
 	float4 _Color0;
 	float4 _Color1;
+	float _Thickness;
 
 	v2f vert(appdata v)
 	{
@@ -84,7 +86,7 @@
 
 			// move position thickness
 			float sinPulsate = sin(-_Time.y*10.0 + v.uv.x*0.3)*0.5 + 0.5;
-			posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02 * (thickness) * sinPulsate;
+			posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * _Thickness * (thickness) * sinPulsate;
 		}
 
 		//o.color = float4(sin(v.uv.x*0.1)*0.5 + 0.5,0.0,0.0, 1.0);
