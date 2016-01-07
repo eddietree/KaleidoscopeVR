@@ -90,10 +90,10 @@
 		}
 
 		//o.color = float4(sin(v.uv.x*0.1)*0.5 + 0.5,0.0,0.0, 1.0);
-		o.color = lerp(_Color0, _Color1, sin(v.uv.x*0.1 )*0.5 + 0.5);
+		o.color = lerp(_Color0, _Color1, (sin(v.uv.x*0.1 )*0.5 + 0.5)*lerp(0.95,1.0,v.uv.y));
 		o.vertex = posCurrNDC;
 		o.normal = v.normal;
-		o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+		o.uv = v.uv;// TRANSFORM_TEX(v.uv, _MainTex);
 
 		UNITY_TRANSFER_FOG(o,o.vertex);
 		return o;
@@ -103,7 +103,12 @@
 	{
 		// sample the texture
 		//fixed4 col = tex2D(_MainTex, i.uv);
-		fixed4 col = i.color;
+
+		float4 color = i.color;
+		color.xyz += pow(abs(i.uv.y), 15.0) * 0.05;
+		//color.xyz += lerp(0.0,0.015,sin(i.uv.y*25.0)*0.5+0.5);
+
+		fixed4 col = color;
 
 	// apply fog
 	UNITY_APPLY_FOG(i.fogCoord, col);

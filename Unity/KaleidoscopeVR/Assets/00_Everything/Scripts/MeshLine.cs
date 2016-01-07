@@ -7,7 +7,7 @@ public class MeshLine : MonoBehaviour
     public int numRotations = 8;
 
     public int numPoints = 0;
-    public const int maxNumPoints = 40;
+    public const int maxNumPoints = 42;
 
     // raw points of the curve
     public Vector3[] points;
