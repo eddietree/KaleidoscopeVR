@@ -92,7 +92,7 @@ public class SegmentMeshGenerator : MonoBehaviour
         {
             int pointIndex = numPointsAdded % MeshLine.maxNumPoints;
             meshLine.SetPoint(pt, pointIndex);
-            meshLine.UpdateVerticesRange(pointIndex - 2, 2);
+            meshLine.UpdateVerticesRange(pointIndex - 1, 2);
 
             meshLine.BreakLineAt(pointIndex);
             meshLine.SendToGpu();

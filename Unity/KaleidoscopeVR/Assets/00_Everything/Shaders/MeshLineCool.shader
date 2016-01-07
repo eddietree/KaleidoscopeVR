@@ -69,13 +69,22 @@
 		float2 posPrevXY = posPrevNDC.xy / posPrevNDC.w;
 
 		// calculate screen-space move angle
-		float2 vec0 = normalize(posCurrXY - posPrevXY);
-		float2 vec1 = normalize(posNextXY - posCurrXY);
-		float2 vecForwardAvg = normalize(vec0 + vec1);
-		float2 vecUp = float2(-vecForwardAvg.y * aspect, vecForwardAvg.x);
+		float2 vecPrev = posCurrXY - posPrevXY;
+		float2 vecNext = posNextXY - posCurrXY;
+		float lenVecPrev = length(vecPrev);
+		float lenVecNext = length(vecNext);
 
-		// move position thickness
-		posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02 * (thickness) *(1.0, 2.0, sin(-_Time.y*10.0 + v.uv.x*0.3)*0.5 + 0.5);
+		float epsilon = 0.001;
+		if (lenVecPrev > epsilon && lenVecNext > epsilon)
+		{
+			float2 vec0 = vecPrev / lenVecPrev;
+			float2 vec1 = vecNext / lenVecNext;
+			float2 vecForwardAvg = normalize(vec0 + vec1);
+			float2 vecUp = float2(-vecForwardAvg.y * aspect, vecForwardAvg.x);
+
+			// move position thickness
+			posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02 * (thickness);// *(1.0, 2.0, sin(-_Time.y*10.0 + v.uv.x*0.3)*0.5 + 0.5);
+		}
 
 		//o.color = float4(sin(v.uv.x*0.1)*0.5 + 0.5,0.0,0.0, 1.0);
 		o.color = lerp(_Color0, _Color1, sin(v.uv.x*0.1)*0.5 + 0.5);

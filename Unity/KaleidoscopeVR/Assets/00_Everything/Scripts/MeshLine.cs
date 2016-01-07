@@ -76,17 +76,21 @@ public class MeshLine : MonoBehaviour
             return;
 
         // indices
-        pointIndexStart = Mathf.Clamp(pointIndexStart, 0, numPoints - 1);
-        int pointIndexEnd = Mathf.Min( numPoints-1, pointIndexStart + pointCount);
+        //pointIndexStart = Mathf.Clamp(pointIndexStart, 0, numPoints - 1);
+        //int pointIndexEnd = Mathf.Min( numPoints-1, pointIndexStart + pointCount);
 
         var bounds = mesh.bounds;
 
-        for (int i = pointIndexStart; i <= pointIndexEnd; i += 1)
+        //print(pointIndexStart);
+
+        for (int i = 0; i < pointCount; i += 1)
         {
+            int indexBaseCurr = (i + numPoints + pointIndexStart) % numPoints;
+
             // indices
-            int pointIndexPrev = (i - 1 + numPoints) % numPoints;
-            int pointIndexCurr = i;
-            int pointIndexNext = (i + 1) % numPoints;
+            int pointIndexPrev = (indexBaseCurr - 1 + numPoints) % numPoints;
+            int pointIndexCurr = indexBaseCurr;
+            int pointIndexNext = (indexBaseCurr + 1) % numPoints;
 
             // pos
             var pointPosPrev = points[pointIndexPrev];
@@ -107,29 +111,31 @@ public class MeshLine : MonoBehaviour
 
             // tris
             int triOffset = pointIndexCurr * 6;
-            tris[ (triOffset + 0)% tris.Length] = (vertOffsetCurr + 0) % vertices.Length;
-            tris[ (triOffset + 1)% tris.Length] = (vertOffsetCurr + 2) % vertices.Length;
-            tris[ (triOffset + 2)% tris.Length] = (vertOffsetCurr + 3) % vertices.Length;
-            tris[ (triOffset + 3)% tris.Length] = (vertOffsetCurr + 0) % vertices.Length;
-            tris[ (triOffset + 4)% tris.Length] = (vertOffsetCurr + 3) % vertices.Length;
-            tris[ (triOffset + 5)% tris.Length] = (vertOffsetCurr + 1) % vertices.Length;
+            tris[ triOffset + 0 ] = (vertOffsetCurr + 0) % vertices.Length;
+            tris[ triOffset + 1 ] = (vertOffsetCurr + 2) % vertices.Length;
+            tris[ triOffset + 2 ] = (vertOffsetCurr + 3) % vertices.Length;
+            tris[ triOffset + 3 ] = (vertOffsetCurr + 0) % vertices.Length;
+            tris[ triOffset + 4 ] = (vertOffsetCurr + 3) % vertices.Length;
+            tris[ triOffset + 5 ] = (vertOffsetCurr + 1) % vertices.Length;
 
             // add point to bounds
             bounds.Encapsulate(pointPosCurr);
         }
 
+        /*
         // handle first previous point (because has no previous)
         var firstPointPrev = points[0] * 2.0f - points[1];
-        if (numPoints == maxNumPoints) firstPointPrev = points[numPoints - 1]; // wrap around?
+        //if (numPoints == maxNumPoints) firstPointPrev = points[numPoints - 1]; // wrap around?
         verticesPrev[0] = firstPointPrev;
         verticesPrev[1] = firstPointPrev;
-
+        
         // handle last point's next vert (because has no next)
         var lastPointNext = points[numPoints - 1] * 2 - points[numPoints - 2];
-        if (numPoints == maxNumPoints) lastPointNext = points[0]; // wrap around?
+        //if (numPoints == maxNumPoints) lastPointNext = points[0]; // wrap around?
         verticesNext[(numPoints - 1) * 2 + 0] = lastPointNext;
-        verticesNext[(numPoints - 1) * 2 + 1] = lastPointNext;
+        verticesNext[(numPoints - 1) * 2 + 1] = lastPointNext;*/
 
+        /*
         // last triangle set should be zerod out
         if (numPoints < maxNumPoints)
         {
@@ -140,7 +146,7 @@ public class MeshLine : MonoBehaviour
             tris[triOffsetFinal + 3] = 0;
             tris[triOffsetFinal + 4] = 0;
             tris[triOffsetFinal + 5] = 0;
-        }
+        }*/
 
         mesh.bounds = bounds;
         SendToGpu();
@@ -148,6 +154,8 @@ public class MeshLine : MonoBehaviour
 
     public void BreakLineAt( int ptIndex )
     {
+        ptIndex = (ptIndex + numPoints) % numPoints;
+
         int triOffset = ptIndex * 6;
 
         tris[(triOffset + 0) % tris.Length] = 0;
@@ -194,7 +202,7 @@ public class MeshLine : MonoBehaviour
         vertices = new Vector3[numVerts];
         verticesPrev = new Vector3[numVerts];
         verticesNext = new Vector4[numVerts];
-        tris = new int[(maxNumPoints - 1) * 6];
+        tris = new int[(maxNumPoints) * 6];
         uvs = new Vector2[numVerts];
 
         // verts
