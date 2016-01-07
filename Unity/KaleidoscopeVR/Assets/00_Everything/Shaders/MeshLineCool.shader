@@ -83,7 +83,8 @@
 			float2 vecUp = float2(-vecForwardAvg.y * aspect, vecForwardAvg.x);
 
 			// move position thickness
-			posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02 * (thickness);// *(1.0, 2.0, sin(-_Time.y*10.0 + v.uv.x*0.3)*0.5 + 0.5);
+			float sinPulsate = sin(-_Time.y*10.0 + v.uv.x*0.3)*0.5 + 0.5;
+			posCurrNDC.xy += vecUp * v.uv.y * posCurrNDC.w * 0.02 * (thickness) * sinPulsate;
 		}
 
 		//o.color = float4(sin(v.uv.x*0.1)*0.5 + 0.5,0.0,0.0, 1.0);
