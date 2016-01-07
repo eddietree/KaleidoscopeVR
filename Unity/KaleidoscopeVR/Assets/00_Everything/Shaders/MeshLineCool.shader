@@ -88,7 +88,7 @@
 		}
 
 		//o.color = float4(sin(v.uv.x*0.1)*0.5 + 0.5,0.0,0.0, 1.0);
-		o.color = lerp(_Color0, _Color1, sin(v.uv.x*0.1)*0.5 + 0.5);
+		o.color = lerp(_Color0, _Color1, sin(v.uv.x*0.1 )*0.5 + 0.5);
 		o.vertex = posCurrNDC;
 		o.normal = v.normal;
 		o.uv = TRANSFORM_TEX(v.uv, _MainTex);
