@@ -15,6 +15,8 @@ public class SegmentMeshGenerator : MonoBehaviour
     Vector3 drawVelAccum = Vector3.zero;
 
     public bool autoDraw = false;
+    public float autoDrawSpeed = 1.0f;
+    public float autoDrawRadius = 0.5f;
 
     void Start ()
     {
@@ -45,9 +47,9 @@ public class SegmentMeshGenerator : MonoBehaviour
     {
         while(true)
         {
-            float time = Time.time * 2.0f;
-            float radius = 0.3f;
-            Vector3 point = new Vector3(Mathf.Cos(time*1.0f) * radius, Mathf.Sin(time*2.0f) * radius, -1.0f);
+            float time = Time.time * autoDrawSpeed;
+            float radius = autoDrawRadius;
+            Vector3 point = new Vector3(Mathf.Cos(time*1.5f) * radius, Mathf.Sin(time*2.0f) * radius, -1.0f);
             TryAddPoint(point);
 
             yield return null;
