@@ -6,6 +6,8 @@
 		_Color0("Color 0", Color) = (1.0,1.0,1.0,1.0)
 		_Color1("Color 1", Color) = (1.0,1.0,1.0,1.0)
 		_Thickness("Thickness", Float) = 0.02
+		_ShadowRadius("Shadow Radius", Float) = 0.3
+		_ShadowAlpha("Shadow Alpha", Float) = 1.0
 	}
 		SubShader
 	{
@@ -48,6 +50,8 @@
 	float4 _Color0;
 	float4 _Color1;
 	float _Thickness;
+	float _ShadowRadius;
+	float _ShadowAlpha;
 
 	v2f vert(appdata v)
 	{
@@ -90,7 +94,11 @@
 		}
 
 		//o.color = float4(sin(v.uv.x*0.1)*0.5 + 0.5,0.0,0.0, 1.0);
-		o.color = lerp(_Color0, _Color1, (sin(v.uv.x*0.1 )*0.5 + 0.5)*lerp(0.95,1.0,v.uv.y));
+
+		float shadow = smoothstep(0.0, _ShadowRadius, length(posCurrXY));
+		shadow = lerp(1.0f, shadow, _ShadowAlpha);
+
+		o.color = lerp(_Color0, _Color1, (sin(v.uv.x*0.1 )*0.5 + 0.5)*lerp(0.95,1.0,v.uv.y)) * shadow;
 		o.vertex = posCurrNDC;
 		o.normal = v.normal;
 		o.uv = v.uv;// TRANSFORM_TEX(v.uv, _MainTex);
